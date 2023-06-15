@@ -19,4 +19,3 @@ function generarMatriculaEspana() {
   }
   
   module.exports = generarMatriculaEspana;
-  
