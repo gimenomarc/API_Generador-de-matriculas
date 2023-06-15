@@ -15,6 +15,8 @@ const comprobarMatriculaAlemania = require('./comprobadores/de');
 const comprobarMatriculaFrancia = require('./comprobadores/fr');
 const comprobarMatriculaItalia = require('./comprobadores/it');
 const comprobarMatriculaAustralia = require('./comprobadores/au');
+const determinarPais = require('./comprobadores/general');
+
 
 const app = express();
 const port = process.env.PORT || 3001;
@@ -72,6 +74,19 @@ app.get('/generar-matricula/:pais', (req, res) => {
   }
 
   res.json({ matriculas });
+});
+
+// DETERMINADOR DE PAÍS
+app.get('/determinar-pais/:matricula', (req, res) => {
+  const matricula = req.params.matricula;
+  const pais = determinarPais(matricula);
+
+  if (!pais) {
+    res.status(400).json({ error: 'Matrícula no reconocida' });
+    return;
+  }
+
+  res.json({ pais });
 });
 
 // COMPROBADORES DE MATRICULAS
