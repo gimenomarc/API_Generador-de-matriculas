@@ -3,8 +3,19 @@ const rateLimit = require('express-rate-limit');
 const cors = require('cors'); 
 const generarMatriculaEspana = require('./generadores/spain');
 const generarMatriculaUSA = require('./generadores/usa');
+const generarMatriculaUK = require('./generadores/gb');
+const generarMatriculaAlemania = require('./generadores/de');
+const generarMatriculaFrancia = require('./generadores/fr');
+const generarMatriculaItalia = require('./generadores/it');
+const generarMatriculaAustralia = require('./generadores/au');
 const comprobarMatriculaEspana = require('./comprobadores/spain');
 const comprobarMatriculaUSA = require('./comprobadores/usa');
+const comprobarMatriculaUK = require('./comprobadores/gb');
+const comprobarMatriculaAlemania = require('./comprobadores/de');
+const comprobarMatriculaFrancia = require('./comprobadores/fr');
+const comprobarMatriculaItalia = require('./comprobadores/it');
+const comprobarMatriculaAustralia = require('./comprobadores/au');
+
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -37,6 +48,21 @@ app.get('/generar-matricula/:pais', (req, res) => {
       case 'us':
         matricula = generarMatriculaUSA();
         break;
+      case 'uk':
+        matricula = generarMatriculaUK();
+        break;
+      case 'de':
+        matricula = generarMatriculaAlemania();
+        break;
+      case 'fr':
+        matricula = generarMatriculaFrancia();
+        break;
+      case 'it':
+        matricula = generarMatriculaItalia();
+        break;
+      case 'aus':
+        matricula = generarMatriculaAustralia();
+        break;
       default:
         res.status(400).json({ error: 'País no encontrado' });
         return;
@@ -60,7 +86,22 @@ app.get('/comprobar-matricula/:pais/:matricula', (req, res) => {
       esValida = comprobarMatriculaEspana(matricula);
       break;
     case 'us':
-      esValida = comprobarMatriculaUSA(matricula);  // Añadir la comprobación para matrículas de EE.UU.
+      esValida = comprobarMatriculaUSA(matricula);
+      break;
+    case 'uk':
+      esValida = comprobarMatriculaUK(matricula);
+      break;
+    case 'de':
+      esValida = comprobarMatriculaAlemania(matricula);
+      break;
+    case 'fr':
+      esValida = comprobarMatriculaFrancia(matricula);
+      break;
+    case 'it':
+      esValida = comprobarMatriculaItalia(matricula);
+      break;
+    case 'aus':
+      esValida = comprobarMatriculaAustralia(matricula);
       break;
     default:
       res.status(400).json({ error: 'País no encontrado' });
