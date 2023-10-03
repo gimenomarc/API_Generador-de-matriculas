@@ -30,7 +30,7 @@ app.use(limiter);
 app.use(cors()); 
 
 app.get('/', (req, res) => {
-  res.send('Bienvenido a la API de Generador de Matrículas. Utilice /generar-matricula/:pais para generar matrículas.');
+  res.send('Bienvenido a la API de Generador de Matrículas. Utilice /generar-matricula/pais para generar matrículas. Ejemplos de países disponibles: es (España), us (Estados Unidos), uk (Reino Unido), de (Alemania), fr (Francia), it (Italia), aus (Australia). Por ejemplo, /generar-matricula/es generará una matrícula para España.');
 });
 
 // GENERADORES DE MATRICULAS
