@@ -17,20 +17,41 @@ const comprobarMatriculaItalia = require('./comprobadores/it');
 const comprobarMatriculaAustralia = require('./comprobadores/au');
 const determinarPais = require('./comprobadores/general');
 
-
 const app = express();
 const port = process.env.PORT || 3001;
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 50 // limit each IP to 5 requests per windowMs
+  max: 50 // limit each IP to 50 requests per minute
 });
 
 app.use(limiter);
-app.use(cors()); 
+app.use(cors());
 
+// Mensaje de bienvenida
 app.get('/', (req, res) => {
-  res.send('Bienvenido a la API de Generador de Matrículas. Utilice /generar-matricula/pais para generar matrículas. Ejemplos de países disponibles: es (España), us (Estados Unidos), uk (Reino Unido), de (Alemania), fr (Francia), it (Italia), aus (Australia). Por ejemplo, /generar-matricula/es generará una matrícula para España.');
+  const welcomeMessage = `
+    <h1>Bienvenido a la API de Generador de Matrículas</h1>
+    <p>Utilice los siguientes métodos para generar y comprobar matrículas:</p>
+    <ul>
+      <li>Generar Matrícula: <code>/generar-matricula/:pais</code></li>
+      <li>Determinar País por Matrícula: <code>/determinar-pais/:matricula</code></li>
+      <li>Comprobar Matrícula: <code>/comprobar-matricula/:pais/:matricula</code></li>
+    </ul>
+    <p>Ejemplos de países disponibles:</p>
+    <ul>
+      <li>España (es)</li>
+      <li>Estados Unidos (us)</li>
+      <li>Reino Unido (uk)</li>
+      <li>Alemania (de)</li>
+      <li>Francia (fr)</li>
+      <li>Italia (it)</li>
+      <li>Australia (aus)</li>
+    </ul>
+    <p>Ejemplo: <code>/generar-matricula/es</code> generará una matrícula para España.</p>
+  `;
+
+  res.send(welcomeMessage);
 });
 
 // GENERADORES DE MATRICULAS
