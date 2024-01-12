@@ -1,6 +1,7 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
-const cors = require('cors'); 
+const cors = require('cors');
+const Parser = require('rss-parser');
 const generarMatriculaEspana = require('./generadores/spain');
 const generarMatriculaUSA = require('./generadores/usa');
 const generarMatriculaUK = require('./generadores/gb');
@@ -27,6 +28,8 @@ const limiter = rateLimit({
 
 app.use(limiter);
 app.use(cors());
+
+const parser = new Parser();
 
 // Mensaje de bienvenida
 app.get('/', (req, res) => {
@@ -145,6 +148,23 @@ app.get('/comprobar-matricula/:pais/:matricula', (req, res) => {
   }
 
   res.json({ esValida });
+});
+
+app.get('/news', async (req, res) => {
+  try {
+    const feed = await parser.parseURL('https://www.coches.net/noticias/rss/?idTipo=4');
+    const formattedNews = feed.items.map((item) => ({
+      title: item.title,
+      link: item.link,
+      description: item.description,
+      pubDate: item.pubDate,
+    }));
+
+    res.json({ news: formattedNews });
+  } catch (error) {
+    console.error('Error al obtener noticias:', error);
+    res.status(500).json({ error: 'Error al obtener noticias' });
+  }
 });
 
 app.listen(port, () => {
