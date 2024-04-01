@@ -22,8 +22,8 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000, // 1 minute
-  max: 50 // limit each IP to 50 requests per minute
+  windowMs: 1 * 60 * 1000, // 1 minuto
+  max: 50 
 });
 
 app.use(limiter);
@@ -31,7 +31,7 @@ app.use(cors());
 
 const parser = new Parser();
 
-// Mensaje de bienvenida
+// MENSAJE DE BIENVENIDA
 app.get('/', (req, res) => {
   const welcomeMessage = `
     <h1>Bienvenido a la API de Generador de Matrículas</h1>
@@ -60,7 +60,7 @@ app.get('/', (req, res) => {
 // GENERADORES DE MATRICULAS
 app.get('/generar-matricula/:pais', (req, res) => {
   const pais = req.params.pais;
-  const cantidad = Math.min(req.query.cantidad || 1, 50); // obtener la cantidad desde los parámetros de consulta, con un máximo de 50
+  const cantidad = Math.min(req.query.cantidad || 1, 100); 
 
   let matriculas = [];
 
@@ -114,41 +114,53 @@ app.get('/determinar-pais/:matricula', (req, res) => {
 });
 
 // COMPROBADORES DE MATRICULAS
-app.get('/comprobar-matricula/:pais/:matricula', (req, res) => {
+app.get('/comprobar-matricula/:pais', (req, res) => {
   const pais = req.params.pais;
-  const matricula = req.params.matricula;
+  const matriculas = req.query.matriculas.split(','); 
 
-  let esValida;
-
-  switch (pais.toLowerCase()) {
-    case 'es':
-      esValida = comprobarMatriculaEspana(matricula);
-      break;
-    case 'us':
-      esValida = comprobarMatriculaUSA(matricula);
-      break;
-    case 'uk':
-      esValida = comprobarMatriculaUK(matricula);
-      break;
-    case 'de':
-      esValida = comprobarMatriculaAlemania(matricula);
-      break;
-    case 'fr':
-      esValida = comprobarMatriculaFrancia(matricula);
-      break;
-    case 'it':
-      esValida = comprobarMatriculaItalia(matricula);
-      break;
-    case 'aus':
-      esValida = comprobarMatriculaAustralia(matricula);
-      break;
-    default:
-      res.status(400).json({ error: 'País no encontrado' });
-      return;
+  if (matriculas.length > 100) { 
+    res.status(400).json({ error: 'No se puede validar más de 100 matrículas a la vez' });
+    return;
   }
 
-  res.json({ esValida });
+  const resultados = {};
+
+  for (let matricula of matriculas) {
+    let esValida;
+
+    switch (pais.toLowerCase()) {
+      case 'es':
+        esValida = comprobarMatriculaEspana(matricula);
+        break;
+      case 'us':
+        esValida = comprobarMatriculaUSA(matricula);
+        break;
+      case 'uk':
+        esValida = comprobarMatriculaUK(matricula);
+        break;
+      case 'de':
+        esValida = comprobarMatriculaAlemania(matricula);
+        break;
+      case 'fr':
+        esValida = comprobarMatriculaFrancia(matricula);
+        break;
+      case 'it':
+        esValida = comprobarMatriculaItalia(matricula);
+        break;
+      case 'aus':
+        esValida = comprobarMatriculaAustralia(matricula);
+        break;
+      default:
+        res.status(400).json({ error: 'País no encontrado' });
+        return;
+    }
+
+    resultados[matricula] = esValida;
+  }
+
+  res.json({ resultados });
 });
+
 
 app.get('/news', async (req, res) => {
   try {
