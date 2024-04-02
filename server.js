@@ -23,7 +23,7 @@ const port = process.env.PORT || 3001;
 
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minuto
-  max: 50 
+  max: 50
 });
 
 app.use(limiter);
@@ -31,36 +31,39 @@ app.use(cors());
 
 const parser = new Parser();
 
-// MENSAJE DE BIENVENIDA
+// WELCOME MESSAGE
 app.get('/', (req, res) => {
-  const welcomeMessage = `
-    <h1>Bienvenido a la API de Generador de Matrículas</h1>
-    <p>Utilice los siguientes métodos para generar y comprobar matrículas:</p>
-    <ul>
-      <li>Generar Matrícula: <code>/generar-matricula/:pais</code></li>
-      <li>Determinar País por Matrícula: <code>/determinar-pais/:matricula</code></li>
-      <li>Comprobar Matrícula: <code>/comprobar-matricula/:pais/:matricula</code></li>
-    </ul>
-    <p>Ejemplos de países disponibles:</p>
-    <ul>
-      <li>España (es)</li>
-      <li>Estados Unidos (us)</li>
-      <li>Reino Unido (uk)</li>
-      <li>Alemania (de)</li>
-      <li>Francia (fr)</li>
-      <li>Italia (it)</li>
-      <li>Australia (aus)</li>
-    </ul>
-    <p>Ejemplo: <code>/generar-matricula/es</code> generará una matrícula para España.</p>
-  `;
+  const welcomeMessage = {
+    message: "Welcome to the License Plate Generator API",
+    endpoints: {
+      generate_license_plate: {
+        description: "Generate a random license plate for the specified country.",
+        endpoint: "/generate-license-plate/:country?quantity=:quantity",
+        example: "/generate-license-plate/es?quantity=5"
+      },
+      determine_country: {
+        description: "Determine the country by a given license plate.",
+        endpoint: "/determine-country/:licensePlate",
+        example: "/determine-country/123ABC"
+      },
+      validate_license_plate: {
+        description: "Validate a license plate for the specified country.",
+        endpoint: "/validate-license-plate/:country/:licensePlate",
+        example: "/validate-license-plate/es/123ABC"
+      }
+    },
+    available_countries: ["es", "us", "uk", "de", "fr", "it", "aus"],
+    quantity_parameter: "quantity",
+    usage_example: "/generate-license-plate/es?quantity=5"
+  };
 
-  res.send(welcomeMessage);
+  res.json(welcomeMessage);
 });
 
 // GENERADORES DE MATRICULAS
 app.get('/generar-matricula/:pais', (req, res) => {
   const pais = req.params.pais;
-  const cantidad = Math.min(req.query.cantidad || 1, 100); 
+  const cantidad = Math.min(req.query.cantidad || 1, 100);
 
   let matriculas = [];
 
@@ -116,9 +119,9 @@ app.get('/determinar-pais/:matricula', (req, res) => {
 // COMPROBADORES DE MATRICULAS
 app.get('/comprobar-matricula/:pais', (req, res) => {
   const pais = req.params.pais;
-  const matriculas = req.query.matriculas.split(','); 
+  const matriculas = req.query.matriculas.split(',');
 
-  if (matriculas.length > 100) { 
+  if (matriculas.length > 100) {
     res.status(400).json({ error: 'No se puede validar más de 100 matrículas a la vez' });
     return;
   }
@@ -159,24 +162,6 @@ app.get('/comprobar-matricula/:pais', (req, res) => {
   }
 
   res.json({ resultados });
-});
-
-
-app.get('/news', async (req, res) => {
-  try {
-    const feed = await parser.parseURL('https://www.coches.net/noticias/rss/?idTipo=4');
-    const formattedNews = feed.items.map((item) => ({
-      title: item.title,
-      link: item.link,
-      description: item.description,
-      pubDate: item.pubDate,
-    }));
-
-    res.json({ news: formattedNews });
-  } catch (error) {
-    console.error('Error al obtener noticias:', error);
-    res.status(500).json({ error: 'Error al obtener noticias' });
-  }
 });
 
 app.listen(port, () => {
