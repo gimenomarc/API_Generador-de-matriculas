@@ -118,8 +118,9 @@ app.get('/v1/determine-country/:licensePlate', (req, res) => {
 
 // COMPROBADORES DE MATRICULAS
 app.get('/v1/validate-license-plate/:country/:licensePlate', (req, res) => {
-  const pais = req.params.pais;
-  const matriculas = req.query.matriculas.split(',');
+  const pais = req.params.country; 
+  const matricula = req.params.licensePlate; 
+  const matriculas = [matricula]; 
 
   if (matriculas.length > 100) {
     res.status(400).json({ error: 'No se puede validar más de 100 matrículas a la vez' });
