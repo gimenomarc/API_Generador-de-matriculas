@@ -32,7 +32,7 @@ app.use(cors());
 const parser = new Parser();
 
 // WELCOME MESSAGE
-app.get('/', (req, res) => {
+app.get('/v1/', (req, res) => {
   const welcomeMessage = {
     message: "Welcome to the License Plate Generator API",
     endpoints: {
@@ -61,9 +61,9 @@ app.get('/', (req, res) => {
 });
 
 // GENERADORES DE MATRICULAS
-app.get('/generar-matricula/:pais', (req, res) => {
+app.get('/v1/generate-license-plate/:country', (req, res) => {
   const pais = req.params.pais;
-  const cantidad = Math.min(req.query.cantidad || 1, 100);
+  const cantidad = Math.min(req.query.cantidad || 1, 500);
 
   let matriculas = [];
 
@@ -104,7 +104,7 @@ app.get('/generar-matricula/:pais', (req, res) => {
 });
 
 // DETERMINADOR DE PAÍS
-app.get('/determinar-pais/:matricula', (req, res) => {
+app.get('/v1/determine-country/:licensePlate', (req, res) => {
   const matricula = req.params.matricula;
   const pais = determinarPais(matricula);
 
@@ -117,7 +117,7 @@ app.get('/determinar-pais/:matricula', (req, res) => {
 });
 
 // COMPROBADORES DE MATRICULAS
-app.get('/comprobar-matricula/:pais', (req, res) => {
+app.get('/v1/validate-license-plate/:country/:licensePlate', (req, res) => {
   const pais = req.params.pais;
   const matriculas = req.query.matriculas.split(',');
 
