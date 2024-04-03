@@ -62,8 +62,8 @@ app.get('/v1/', (req, res) => {
 
 // GENERADORES DE MATRICULAS
 app.get('/v1/generate-license-plate/:country', (req, res) => {
-  const pais = req.params.country; // Corregido a req.params.country
-  const cantidad = Math.min(req.query.cantidad || 1, 500);
+  const pais = req.params.country;
+  const cantidad = Math.min(req.query.quantity || 1, 500);
 
   let matriculas = [];
 
