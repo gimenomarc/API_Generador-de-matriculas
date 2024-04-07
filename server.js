@@ -2,6 +2,7 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const cors = require('cors');
 const Parser = require('rss-parser');
+const generarDNI = require('./generadores/generarDNI');
 const generarMatriculaEspana = require('./generadores/spain');
 const generarMatriculaUSA = require('./generadores/usa');
 const generarMatriculaUK = require('./generadores/gb');
@@ -163,6 +164,19 @@ app.get('/v1/validate-license-plate/:country/:licensePlate', (req, res) => {
   }
 
   res.json({ resultados });
+});
+
+// GENERADOR DE DNIs
+app.get('/v1/generate-dni', (req, res) => {
+  const cantidad = Math.min(req.query.quantity || 1, 500);
+
+  let DNIs = [];
+
+  for (let i = 0; i < cantidad; i++) {
+    DNIs.push(generarDNI());
+  }
+
+  res.json({ DNIs });
 });
 
 app.listen(port, () => {
